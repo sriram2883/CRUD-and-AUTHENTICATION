@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Table</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #e0e0e0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #logout{
+            position: absolute;
+            right: 0;
+            top: 0;
+            margin: 10px;
+            width: 100px;
+            height: 50px;
+        }
+        .root {
+            width: 100%;
+            max-width: 1200px;
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a73e8;
+            margin-bottom: 16px;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .root button {
+            background-color: #1a73e8;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 14px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .root button:hover {
+            background-color: #1558b2;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .root button:active {
+            background-color: #0e3e8e;
+            box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.15);
+        }
+
+        .button-group i {
+            font-size: 18px;
+        }
+
+        .Table {
+            width: 100%;
+            overflow-x: auto;
+            height: 400px;
+            overflow-y: auto;
+
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        thead {
+            position: sticky;
+            top: 0;
+            z-index: 1; 
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: center; 
+            
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #ee4e4e;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+
+        .transition-out {
+            animation: fadeOut 0.5s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+        }
+        .forms{
+            background-color: #ee4e4e;
+            color: white;
+            padding: 10px;
+            border-radius: 20px;
+            display:none;
+        }
+        input{
+            margin: 10px;
+        }
+        #ConfirmsButton{
+            background-color: white;
+            color: black;
+            margin-left: 50px;
+            margin-right: 50px;
+            margin-top: 10px;
+        }
+        .confirms{
+            display: flex;
+            justify-content: space-between;
+        }
+        #deleteUserbtn{
+            display: flex;
+            justify-content: center;    
+        }
+        #logoutbtn{
+            background-color: #ee4e4e;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);   
+        }
+    </style>
+</head>
+<body>
+    <div class="logout" id="logout">
+        <button id="logoutbtn" onclick="localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/';">Logout</button>
+    </div>
+    <div class="root" id="root">
+        <div class="title">Transaction Database</div>
+        <div class="button-group">
+            <button onclick="loadData()"><i class="material-icons">search</i> Get All Transactions</button>
+            <button onclick="createINIT()"><i class="material-icons">add</i> Create Transaction</button>
+            <button onclick="read()"><i class="material-icons">visibility</i> Read Transaction</button>
+            <button onclick="updateINIT()"><i class="material-icons">edit</i> Update Transaction</button>
+            <button onclick="getUsers()">User List</button>
+        </div>
+        <div class="forms" id="forms">
+            TransactionID :<input type="text" placeholder="Enter Transaction ID" id="TransactionID"> <br>
+            CustomerID : <input type="text" placeholder="Enter CustomerID" id="CustomerID"><br>
+            Transaction Amount : <input type="text" placeholder="Amount" id="Amount"><br>
+            Transaction Status : <input type="radio" name="TransactionStatus" id="TransactionStatus" value="SUCCESSFUL">SUCCESSFUL
+                                 <input type="radio" name="TransactionStatus" id="TransactionStatus" value="PENDING">PENDING
+                                 <input type="radio" name="TransactionStatus" id="TransactionStatus" value="FAILED">FAILED <br>
+            Transaction Type :   <input type="radio" name="TransactionType" id="TransactionType" value="CREDIT">CREDIT 
+                                 <input type="radio" name="TransactionType" id="TransactionType" value="DEBIT">DEBIT 
+                                 <input type="radio" name="TransactionType" id="TransactionType" value="CASH"> CASH <br>
+            Currency : <input type="text" placeholder="Enter Currency Type" id="Currency"> <br>
+            <div class="confirms">
+                <button class="CancelButton" id="ConfirmsButton" onclick="cancelAll()">CANCEL</button>
+                <button class="ConfirmButton" id="ConfirmsButton">CONFIRM</button>
+            </div>
+            
+        </div>
+        <div class="Table" id="Table">
+            <table>
+                <thead>
+                    <th>Transaction ID</th>
+                    <th>CUSTOMER ID</th>
+                    <th>Transaction date</th>
+                    <th>Transaction Amount</th>
+                    <th>Transaction status</th>
+                    <th>Transaction Type</th>
+                    <th>Currency</th>
+                    <th>LoggedBy</th>
+                    <th>Delete</th>
+                </thead>
+                <tbody class="TableContent" id="TableContent">
+
+                </tbody>
+            </table>
+        </div>
+        <div class="Table" id="UsersTable">
+            <table>
+                <thead>
+                    <th>username</th>
+                    <th>email</th>
+                    <th>Delete</th>
+                </thead>
+                <tbody class="UserTableContent" id="UserTableContent">
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+});
+
+var Table = document.getElementById('TableContent');
+var UserTable = document.getElementById('UsersTable');
+var Tab = document.getElementById("Table");
+
+function loadData() {
+    UserTable.style.display = "none";
+    var forms = document.getElementById("forms");
+    forms.style.display = "none";
+    Tab.style.display = "inline-block";
+    Table.innerHTML = "";
+    
+    const token = JSON.parse(localStorage.getItem('token')); 
+    if (!token) {
+        alert('You are not logged in!');
+        window.location.href = '/'; 
+        return;
+    }
+
+    const req = new XMLHttpRequest();
+    req.open('GET', '/admin/transactions', true);
+    req.setRequestHeader('Content-Type', 'application/json');
+    req.setRequestHeader('Authorization', `Bearer ${token}`);
+    req.onreadystatechange = () => {
+
+        if (req.readyState == 4 && req.status == 200) {
+            const data = JSON.parse(req.responseText);
+            data.forEach((transaction) => {
+                const row = document.createElement('tr');
+                row.id = `transaction${transaction.transaction_id}`;
+                row.innerHTML = `
+                    <td>${transaction.transaction_id}</td>
+                    <td>${transaction.customer_id}</td>
+                    <td>${transaction.transaction_date}</td>
+                    <td>${transaction.amount}</td>
+                    <td>${transaction.status}</td>
+                    <td>${transaction.payment_method}</td>
+                    <td>${transaction.currency}</td>
+                    <td>${transaction.logged_by}</td>
+                    <td><button onclick="prepareDelete('${row.id}')">Delete</button></td>
+                `;
+                Table.appendChild(row);
+            });
+        } else if (req.readyState == 4) {
+            if (req.status == 403 || req.status == 401) {
+                alert('Unauthorized access. Please log in again.');
+                window.location.href = '/';
+            } else {
+                console.error('Failed to load data:', req.statusText);
+            }
+        }
+    };
+
+    req.send();
+}
+
+
+function createINIT() {
+    const token = localStorage.getItem('token'); 
+    cancelAll();
+    if (!token) {
+        alert('You are not logged in!');
+        window.location.href = '/'; 
+        return;
+    }
+    UserTable.style.display = "none";
+    var forms = document.getElementById("forms");
+    forms.style.display = "inline-block";
+    var Tab = document.getElementById("Table");
+    Tab.style.display = "none";
+    document.querySelector(".ConfirmButton").onclick = create;
+}
+
+function create() {
+    var flag = 0;
+    var transaction_id = document.getElementById("TransactionID").value;
+    if (parseInt(transaction_id) != transaction_id) {
+        alert("Enter correct data format");
+        flag = 1;
+    }
+    const token = JSON.parse(localStorage.getItem('token')); 
+
+    if (flag == 0) {
+        var customer_id = document.getElementById("CustomerID").value;
+        var transaction_date = new Date().toISOString();
+        var amount = parseFloat(document.getElementById("Amount").value);
+        var status = document.querySelector('input[name="TransactionStatus"]:checked').value;
+        var payment_method = document.querySelector('input[name="TransactionType"]:checked').value;
+        var logged_by = "admin";
+        var currency = document.getElementById("Currency").value;
+        const req = new XMLHttpRequest();
+        req.open('POST', '/admin/transactions', true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.setRequestHeader('Authorization', `Bearer ${token}`);
+        req.onreadystatechange = () => {
+            if (req.readyState == 4 && req.status == 201) {
+                alert("Transaction Created Successfully");
+                loadData();
+            } else if (req.readyState == 4 && req.status == 400) {
+                alert("Wrong inputs, please check again");
+            }
+        };
+        req.send(JSON.stringify({
+            transaction_id: parseInt(transaction_id),
+            customer_id: customer_id,
+            transaction_date: transaction_date,
+            amount: amount,
+            status: status,
+            payment_method: payment_method,
+            currency: currency,
+            logged_by: logged_by
+        }));
+    }
+    cancelAll();
+}
+
+function updateINIT() {
+    const token = localStorage.getItem('token'); 
+
+    if (!token) {
+        alert('You are not logged in!');
+        window.location.href = '/'; 
+        return;
+    }
+    UserTable.style.display = "none";
+    var forms = document.getElementById("forms");
+    forms.style.display = "inline-block";
+    var Tab = document.getElementById("Table");
+    Tab.style.display = "none";
+    document.querySelector(".ConfirmButton").onclick = update;
+    var transaction_id = prompt("Enter Transaction ID (Only Integers Allowed)");
+    var flag = 0;
+    if (parseInt(transaction_id) != transaction_id) {
+        alert("Enter correct data format");
+        flag = 1;
+    }
+    if (flag == 0) {
+        var row = document.getElementById(`transaction${transaction_id}`);
+        if (!row) {
+            alert("Transaction not found");
+            return;
+        }
+        document.getElementById("TransactionID").value = transaction_id;
+        document.getElementById("TransactionID").disabled = true;
+        document.getElementById("CustomerID").value = row.children[1].innerText;
+        document.getElementById("Amount").value = row.children[3].innerText;
+        document.querySelectorAll('input[name="TransactionStatus"]').forEach(radio => {
+            if (radio.value === row.children[4].innerText) radio.checked = true;
+        });
+        document.querySelectorAll('input[name="TransactionType"]').forEach(radio => {
+            if (radio.value === row.children[5].innerText) radio.checked = true;
+        });
+        document.getElementById("Currency").value = row.children[6].innerText;
+    }
+}
+
+function update() {
+    const token = JSON.parse(localStorage.getItem('token')); 
+    var flag = 0;
+    var transaction_id = document.getElementById("TransactionID").value;
+    if (parseInt(transaction_id) != transaction_id) {
+        alert("Enter correct data format");
+        flag = 1;
+    }
+    if (flag == 0) {
+        var customer_id = document.getElementById("CustomerID").value;
+        var transaction_date = new Date().toISOString();
+        var amount = parseFloat(document.getElementById("Amount").value);
+        var status = document.querySelector('input[name="TransactionStatus"]:checked').value;
+        var payment_method = document.querySelector('input[name="TransactionType"]:checked').value;
+        var logged_by = "admin";
+        var currency = document.getElementById("Currency").value;
+        const req = new XMLHttpRequest();
+        req.open('PUT', `/admin/transactions/${transaction_id}`, true);
+        req.setRequestHeader('Content-Type', 'application/json');
+        req.setRequestHeader('Authorization', `Bearer ${token}`);
+        req.onreadystatechange = () => {
+            if (req.readyState == 4 && req.status == 202) {
+                alert("Transaction Updated Successfully");
+                loadData();
+            } else if (req.readyState == 4 && req.status == 400) {
+                alert("Wrong inputs, please check again");
+            }
+        };
+        req.send(JSON.stringify({
+            transaction_id: parseInt(transaction_id),
+            customer_id: customer_id,
+            transaction_date: transaction_date,
+            amount: amount,
+            status: status,
+            payment_method: payment_method,
+            currency: currency,
+            logged_by: logged_by
+        }));
+    }
+    cancelAll();
+}
+
+function prepareDelete(transactionId) {
+    const token = JSON.parse(localStorage.getItem('token')); 
+
+    if (!token) {
+        alert('You are not logged in!');
+        window.location.href = '/'; 
+        return;
+    }
+
+    const row = document.getElementById(transactionId);
+    if (row) {
+        row.classList.add('transition-out');
+        setTimeout(() => {
+            const req = new XMLHttpRequest();
+            req.open('DELETE', `/transactions/${transactionId.replace('transaction', '')}`, true);
+            req.setRequestHeader('Authorization', `Bearer ${token}`);
+            req.onreadystatechange = () => {
+                if (req.readyState == 4 && req.status == 200) {
+                    alert("Transaction Deleted Successfully");
+                    loadData();
+                } else if (req.readyState == 4 && req.status == 400) {
+                    alert("Wrong inputs, please check again");
+                }
+            };
+            req.send();
+        }, 500);
+    }
+}
+
+function read() {
+    const token = JSON.parse(localStorage.getItem('token')); 
+
+    if (!token) {
+        alert('You are not logged in!');
+        window.location.href = '/'; 
+        return;
+    }
+    UserTable.style.display = "none";
+    var forms = document.getElementById("forms");
+    forms.style.display = "none";
+    var Tab = document.getElementById("Table");
+    Tab.style.display = "inline-block";
+    var flag = 0;
+    var transaction_id = prompt("Enter Transaction ID (Only Integers Allowed)");
+    if (parseInt(transaction_id) != transaction_id) {
+        alert("Enter correct data format");
+        flag = 1;
+    }
+    if (flag == 0) {
+        const req = new XMLHttpRequest();
+        req.open('GET', `/transactions/${transaction_id}`, true);
+        req.setRequestHeader('Authorization', `Bearer ${token}`);
+        req.onreadystatechange = () => {
+            if (req.readyState == 4 && req.status == 200) {
+                const transaction = JSON.parse(req.responseText);
+                Table.innerHTML = `
+                    <tr id="transaction${transaction[0].transaction_id}">
+                        <td>${transaction[0].transaction_id}</td>
+                        <td>${transaction[0].customer_id}</td>
+                        <td>${transaction[0].transaction_date}</td>
+                        <td>${transaction[0].amount}</td>
+                        <td>${transaction[0].status}</td>
+                        <td>${transaction[0].payment_method}</td>
+                        <td>${transaction[0].currency}</td>
+                        <td>${transaction[0].logged_by}</td>
+                        <td><button onclick="prepareDelete('transaction${transaction[0].transaction_id}')">Delete</button></td>
+                    </tr>
+                `;
+            }
+        };
+        req.send();
+    }
+}
+
+function cancelAll() {
+    var forms = document.getElementById("forms");
+    forms.style.display = "none";
+    var Tab = document.getElementById("Table");
+    Tab.style.display = "inline-block";
+    document.getElementById("TransactionID").value = "";
+    document.getElementById("CustomerID").value = "";
+    document.getElementById("Amount").value = "";
+    document.querySelectorAll('input[name="TransactionStatus"]').forEach(radio => radio.checked = false);
+    document.querySelectorAll('input[name="TransactionType"]').forEach(radio => radio.checked = false);
+    document.getElementById("Currency").value = "";
+    document.getElementById("TransactionID").disabled = false;
+}
+
+function getUsers() {
+    var forms=document.getElementById("forms");
+    forms.style.display='none'
+    UserTable.style.display='inline-block'
+    Tab.style.display='none'
+    document.getElementById("Table").style.display = "none";
+    const token = JSON.parse(localStorage.getItem('token'));
+    UserTableContent=document.getElementById('UserTableContent');
+    UserTableContent.innerHTML = "";
+    if (!token) {
+        alert('You are not logged in!');
+        window.location.href = '/';
+        return;
+    }
+    const req = new XMLHttpRequest();
+    req.open('GET', '/admin/users', true);
+    req.setRequestHeader('Content-Type', 'application/json');
+    req.setRequestHeader('Authorization', `Bearer ${token}`);
+    req.onreadystatechange = () => {
+        if (req.readyState == 4 && req.status == 200) {
+            const data = JSON.parse(req.responseText);
+            data.forEach((user) => {
+                const row = document.createElement('tr');
+                row.id = `user${user.username}`;
+                row.innerHTML = `
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td id="deleteUserbtn"><button onclick="prepareDeleteUser('${row.id}')"  >Delete</button></td>
+                `;
+                UserTableContent.appendChild(row);
+            });
+        } else if (req.readyState == 4) {
+            if (req.status == 403 || req.status == 401) {
+                alert('Unauthorized access. Please log in again.');
+                window.location.href = '/';
+            } else {
+                console.error('Failed to load data:', req.statusText);
+            }
+        }
+    };
+
+    req.send();
+}
+
+function prepareDeleteUser(userId) {
+    const token = JSON.parse(localStorage.getItem('token'));
+
+    if (!token) {
+        alert('You are not logged in!');
+        window.location.href = '/';
+        return;
+    }
+
+    const row = document.getElementById(userId);
+    console.log(row);
+    if (row) {
+        row.classList.add('transition-out');
+        setTimeout(() => {
+            const req = new XMLHttpRequest();
+            req.open('DELETE', `/admin/users/${userId.replace('user', '')}`, true);
+            req.setRequestHeader('Authorization', `Bearer ${token}`);
+            req.onreadystatechange = () => {
+                if (req.readyState == 4 && req.status == 200) {
+                    alert("User Deleted Successfully");
+                    getUsers();
+                } else if (req.readyState == 4 && req.status == 400) {
+                    alert("Wrong inputs, please check again");
+                }
+            };
+            req.send();
+        }, 500);
+    }
+}
+
+
+
+    </script>
+</body>
+</html>

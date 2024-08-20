@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoginPage</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #e0e0e0;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .root {
+            width: 50%;
+            max-width: 1000px;
+            background-color: #FFFBE6;
+            padding: 15px;
+            border-radius: 16px;
+            box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+        form{
+            width: 100%;
+            height: 400px;
+            background-color: #ee4e4e;
+            color: white;
+            border-radius: 20px;
+
+        }
+        input{
+            margin: 10px;
+            border-radius: 5px;
+        }
+        #ConfirmsButton{
+            background-color: white;
+            color: black;
+            margin-left: 50px;
+            margin-right: 50px;
+            margin-top: 10px;
+        }
+        h1{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .inputs{
+            padding-left: 35%;
+        }
+        #RegistrationForm{
+            display: none;
+        }
+        #AdminForm{
+            display: none;
+        }
+        .confirms{
+            display: flex;
+            justify-content: space-around;
+            padding-top: 40px;
+            align-items: center;
+            margin: 40px;
+        }
+        button{
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="root">
+        <form action="/" method="post" id="LoginForm">
+            <h1>LOGIN PAGE</h1>
+            <div class="inputs">
+                Username: <input type="text" name="username" placeholder="Username" required><br>
+                Password: <input type="password" name="password" placeholder="Password" required><br>
+                Email: <input type="email" name="email" placeholder="Enter Email" required><br>
+            </div>
+            <div class="confirms">
+                <button type="submit">Login</button>
+                <button type="button" id="Registration" onclick="changeForm(1)">REGISTER</button>
+                <button type="button" id="Admin" onclick="changeForm(2)">ADMIN</button>
+            </div>
+        </form>
+        <form action="/" method="post" id="RegistrationForm">
+            <h1>REGISTER HERE</h1>
+            <div class="inputs">
+                Username: <input type="text" name="username" placeholder="Username" required><br>
+                Password: <input type="password" name="password" placeholder="Password" required><br>
+                Email: <input type="email" name="email" placeholder="Enter Email" required><br>
+            </div>
+            <div class="confirms">
+                <button type="button" id="Login" onclick="changeForm(0)">Login</button>
+                <button type="submit">REGISTER</button>
+                <button type="button" id="Admin" onclick="changeForm(2)">ADMIN</button>
+            </div>
+        </form>
+        <form action="/" method="post" id="AdminForm">
+            <h1>ADMIN PAGE</h1>
+            <div class="inputs">
+                Username: <input type="text" name="username" placeholder="Username" required><br>
+                Password: <input type="password" name="password" placeholder="Password" required><br>
+                Email: <input type="email" name="email" placeholder="Enter Email" required><br>
+            </div>
+            <div class="confirms">
+                <button type="button" id="Login" onclick="changeForm(0)">Login</button>
+                <button type="button" id="Registration" onclick="changeForm(1)">REGISTER</button>
+                <button type="submit">ADMIN</button>
+
+            </div>
+        </form>
+    </div>
+    <script src="login.js"></script>
+</body>
+</html>
